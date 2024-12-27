@@ -1,0 +1,139 @@
+
+#include <stdio.h>
+#include <string.h>
+
+// Structure to represent a bank account
+struct Account {
+    int accountID;
+    char name[50];
+    double balance;
+};
+
+// Function to create a new bank account
+void createAccount(struct Account *accounts, int *count) {
+    printf("Enter account ID: ");
+    scanf("%d", &accounts[*count].accountID);
+    getchar();  // To consume the newline character left by scanf
+
+    printf("Enter account holder's name: ");
+    fgets(accounts[*count].name, 50, stdin);
+    accounts[*count].name[strcspn(accounts[*count].name, "\n")] = '\0';  // Remove newline character
+
+    accounts[*count].balance = 0.0;  // Initial balance is 0
+    (*count)++;
+    printf("Account created successfully!\n");
+}
+
+// Function to display all accounts
+void displayAccounts(struct Account *accounts, int count) {
+    if (count == 0) {
+        printf("No accounts available in the bank.\n");
+    } else {
+        printf("\nList of Bank Accounts:\n");
+        printf("ID\tName\t\tBalance\n");
+        printf("-------------------------------\n");
+        for (int i = 0; i < count; i++) {
+            printf("%d\t%s\t\t%.2f\n", accounts[i].accountID, accounts[i].name, accounts[i].balance);
+        }
+    }
+}
+
+// Function to deposit money into an account
+void depositMoney(struct Account *accounts, int count) {
+    int id;
+    double amount;
+
+    printf("Enter account ID to deposit into: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (accounts[i].accountID == id) {
+            printf("Enter amount to deposit: ");
+            scanf("%lf", &amount);
+            if (amount > 0) {
+                accounts[i].balance += amount;
+                printf("Deposited %.2f successfully. New balance: %.2f\n", amount, accounts[i].balance);
+            } else {
+                printf("Invalid amount. Please enter a positive value.\n");
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Account not found.\n");
+    }
+}
+
+// Function to withdraw money from an account
+void withdrawMoney(struct Account *accounts, int count) {
+    int id;
+    double amount;
+
+    printf("Enter account ID to withdraw from: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (accounts[i].accountID == id) {
+            printf("Enter amount to withdraw: ");
+            scanf("%lf", &amount);
+            if (amount > 0 && amount <= accounts[i].balance) {
+                accounts[i].balance -= amount;
+                printf("Withdrew %.2f successfully. New balance: %.2f\n", amount, accounts[i].balance);
+            } else if (amount > accounts[i].balance) {
+                printf("Insufficient balance.\n");
+            } else {
+                printf("Invalid amount. Please enter a positive value.\n");
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Account not found.\n");
+    }
+}
+
+int main() {
+    struct Account accounts[100];  // Array to store bank accounts
+    int count = 0;  // Keep track of the number of accounts
+    int choice;
+
+    while (1) {
+        printf("\nBank Account Management System\n");
+        printf("1. Create Account\n");
+        printf("2. Display All Accounts\n");
+        printf("3. Deposit Money\n");
+        printf("4. Withdraw Money\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                createAccount(accounts, &count);
+                break;
+            case 2:
+                displayAccounts(accounts, count);
+                break;
+            case 3:
+                depositMoney(accounts, count);
+                break;
+            case 4:
+                withdrawMoney(accounts, count);
+                break;
+            case 5:
+                printf("Exiting system...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
+
